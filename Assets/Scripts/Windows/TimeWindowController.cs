@@ -59,8 +59,9 @@ namespace Windows
 
             var minutesAngle = SettingsData.GetMinutesAngle(daySeconds);
             var hourAngle = SettingsData.GetHourAngle(daySeconds);
+            var secondsAngle = SettingsData.GetSecondsAngle(daySeconds);
 
-            _timeWindow.UpdateTime(dateTime, minutesAngle, hourAngle);
+            _timeWindow.UpdateTime(dateTime, minutesAngle, hourAngle, secondsAngle);
         }
 
         private void OnEditButtonClicked()
@@ -82,13 +83,13 @@ namespace Windows
             _sceneListener.Confirm();
         }
         
-        private void OnConfirmArrowsButtonClicked(Quaternion hoursRotation, Quaternion minutesRotation)
+        private void OnConfirmArrowsButtonClicked(Quaternion hoursRotation, Quaternion minutesRotation, Quaternion secondsRotation)
         {
             if (_sceneListener == null || _timeWindow == null)
                 return;
-            
-            _time = new DateTime().AddSeconds(SettingsData.GetSeconds(hoursRotation.eulerAngles.z, minutesRotation.eulerAngles.z));
-            _timeWindow.UpdateTime(_time, minutesRotation.eulerAngles.z, hoursRotation.eulerAngles.z);
+
+            _time = new DateTime().AddSeconds(SettingsData.GetSeconds(hoursRotation.eulerAngles.z, minutesRotation.eulerAngles.z, secondsRotation.eulerAngles.z));
+            _timeWindow.UpdateTime(_time, minutesRotation.eulerAngles.z, hoursRotation.eulerAngles.z, secondsRotation.eulerAngles.z);
 
             _sceneListener.Confirm();
         }

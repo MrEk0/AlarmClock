@@ -11,9 +11,11 @@ namespace Configs
         private const float CLOCK_DEGREES = 360f;
 
         [SerializeField] private string _serverURL = "https://yandex.com/time/sync.json";
+        [SerializeField] private string _extraServerURL = "https://yandex.com/time/sync.json";
         [Min(0f)] [SerializeField] private float serverRequestUpdateTime = 3600;
 
         public string ServerURL => _serverURL;
+        public string ExtraServerURL => _extraServerURL;
         public float ServerRequestUpdateTime => serverRequestUpdateTime;
 
         public static float GetHourAngle(float secondsElapsed)
@@ -25,14 +27,21 @@ namespace Configs
         {
             return secondsElapsed * (CLOCK_DEGREES / SECONDS_IN_MINUTE / SECONDS_IN_MINUTE);
         }
-
-        public static float GetSeconds(float hoursAngle, float minutesAngle)
+        
+        public static float GetSecondsAngle(float secondsElapsed)
         {
-            var hAngle = hoursAngle < 0 ? Mathf.Abs(hoursAngle) : CLOCK_DEGREES - hoursAngle;
-            var mAngle = minutesAngle < 0 ? Mathf.Abs(minutesAngle) : CLOCK_DEGREES - minutesAngle;
+            return secondsElapsed * (CLOCK_DEGREES / SECONDS_IN_MINUTE);
+        }
+
+        public static float GetSeconds(float hoursAngle, float minutesAngle, float secondsAngle)
+        {
+            var hAngle = hoursAngle < 0f ? Mathf.Abs(hoursAngle) : CLOCK_DEGREES - hoursAngle;
+            var mAngle = minutesAngle < 0f ? Mathf.Abs(minutesAngle) : CLOCK_DEGREES - minutesAngle;
+            var sAngle = secondsAngle < 0f ? Mathf.Abs(secondsAngle) : CLOCK_DEGREES - secondsAngle;
 
             return Mathf.FloorToInt(hAngle / (CLOCK_DEGREES / CLOCK_NUMBERS)) * SECONDS_IN_HOUR +
-                   mAngle / (CLOCK_DEGREES / SECONDS_IN_MINUTE) * SECONDS_IN_MINUTE;
+                   Mathf.FloorToInt(mAngle / (CLOCK_DEGREES / SECONDS_IN_MINUTE)) * SECONDS_IN_MINUTE +
+                   sAngle / (CLOCK_DEGREES / SECONDS_IN_MINUTE);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Scene
             var timeController = _sceneInitializer.ServiceLocator.GetService<TimeController>();
             var data = _sceneInitializer.ServiceLocator.GetService<SettingsData>();
 
-            timeDataManager.RequestTime(data.ServerURL, dateTime =>
+            timeDataManager.RequestTime(data.ServerURL, data.ExtraServerURL, dateTime =>
             {
                 timeController.SetTimeUtc(dateTime);
 

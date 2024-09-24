@@ -47,13 +47,13 @@ public class TimeDataManager : ISceneUpdatable
 
         _timer = 0f;
 
-        RequestTime(_data.ServerURL, (time) =>
+        RequestTime(_data.ServerURL, _data.ExtraServerURL, (time) =>
         {
             UpdateTimeEvent(time);
         });
     }
 
-    public void RequestTime(string urlTime, Action<DateTime> onComplete)
+    public void RequestTime(string urlTime, string extraUrlTime, Action<DateTime> onComplete)
     {
         if (_asyncTaskController == null || _mainThreadDispatcher == null)
         {
@@ -71,11 +71,24 @@ public class TimeDataManager : ISceneUpdatable
             });
         }, error =>
         {
-            _mainThreadDispatcher.Process(() =>
+            Debug.LogError($" {error}");
+            
+            _asyncTaskController.Wait(WebRequestHelper.HttpGetAsync(extraUrlTime), response =>
             {
-                Debug.LogError($" {error}");
+                _mainThreadDispatcher.Process(() =>
+                {
+                    var data = Deserializer.DeserializeFromJson(response, new TimeData());
 
-                onComplete(DateTime.UtcNow);
+                    onComplete(DateTimeOffset.TryParse(data?.time, out var result) ? result.UtcDateTime : DateTime.UtcNow);
+                });
+            }, extraError =>
+            {
+                _mainThreadDispatcher.Process(() =>
+                {
+                    Debug.LogError($" {extraError}");
+
+                    onComplete(DateTime.UtcNow);
+                });
             });
         });
     }

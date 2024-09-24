@@ -8,11 +8,12 @@ namespace Windows
     public class TimeWindow : MonoBehaviour
     {
         public event Action<string> ConfirmTextEvent = delegate { };
-        public event Action<Quaternion, Quaternion> ConfirmArrowsEvent = delegate { };
+        public event Action<Quaternion, Quaternion, Quaternion> ConfirmArrowsEvent = delegate { };
         public event Action EditEvent = delegate { };
 
         [SerializeField] private RectTransform _minutesArrow;
         [SerializeField] private RectTransform _hoursArrow;
+        [SerializeField] private RectTransform _secondsArrow;
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private Button _editButton;
         [SerializeField] private Button _confirmTextFieldButton;
@@ -40,12 +41,13 @@ namespace Windows
             _confirmArrowsButton.onClick.RemoveListener(OnConfirmArrowsButtonClicked);
         }
 
-        public void UpdateTime(DateTime dateTime, float minutesAngle, float hourAngle)
+        public void UpdateTime(DateTime dateTime, float minutesAngle, float hourAngle, float secondsAngle)
         {
             _timeText.text = string.Format($"{dateTime.Hour:00} : {dateTime.Minute:00} : {dateTime.Second:00}");
 
             _minutesArrow.rotation = Quaternion.Euler(0f, 0f, -minutesAngle);
             _hoursArrow.rotation = Quaternion.Euler(0f, 0f, -hourAngle);
+            _secondsArrow.rotation = Quaternion.Euler(0f, 0f, -secondsAngle);
         }
 
         private void OnEditButtonClicked()
@@ -55,7 +57,7 @@ namespace Windows
 
         private void OnConfirmArrowsButtonClicked()
         {
-            ConfirmArrowsEvent(_hoursArrow.rotation, _minutesArrow.rotation);
+            ConfirmArrowsEvent(_hoursArrow.rotation, _minutesArrow.rotation, _secondsArrow.rotation);
         }
         
         private void OnConfirmTextFieldButtonClicked()
