@@ -74,11 +74,17 @@ namespace Windows
 
         private void OnConfirmTextTextButtonClicked(string text)
         {
-            if (_sceneListener == null)
+            if (_sceneListener == null || _timeWindow == null)
                 return;
-            
-            _time = DateTimeOffset.TryParse(text, out var result) ? result.DateTime : _time;
-            UpdateTime(_time);
+
+            if (!DateTimeOffset.TryParse(text, out var result))
+            {
+                _sceneListener.Confirm();
+                return;
+            }
+
+            var alarmAngle = SettingsData.GetHourAngle((float)(result.DateTime - new DateTime().Date).TotalSeconds);
+            _timeWindow.UpdateAlarmTime(result.DateTime, alarmAngle);
 
             _sceneListener.Confirm();
         }
@@ -88,8 +94,8 @@ namespace Windows
             if (_sceneListener == null || _timeWindow == null)
                 return;
 
-            _time = new DateTime().AddSeconds(SettingsData.GetSeconds(hoursRotation.eulerAngles.z, minutesRotation.eulerAngles.z, secondsRotation.eulerAngles.z));
-            _timeWindow.UpdateTime(_time, minutesRotation.eulerAngles.z, hoursRotation.eulerAngles.z, secondsRotation.eulerAngles.z);
+            var alarmTime = new DateTime().AddSeconds(SettingsData.GetSeconds(hoursRotation.eulerAngles.z, minutesRotation.eulerAngles.z, secondsRotation.eulerAngles.z));
+            _timeWindow.UpdateAlarmTime(alarmTime, hoursRotation.eulerAngles.z);
 
             _sceneListener.Confirm();
         }
